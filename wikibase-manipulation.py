@@ -53,17 +53,15 @@ def retrieve_credentials_and_get_token(session, config):
     api_url = config['CREDENTIALS']['ENDPOINT_URL']
     login_token_response, session = get_token(session, api_url, 'login')
     login_token = login_token_response['query']['tokens']['logintoken']
-    print(login_token)
     data, session = login(session, 
                           api_url, 
                           login_token, config['CREDENTIALS']['USERNAME'], 
                           config['CREDENTIALS']['PASSWORD'])
     csrf_token_response, session = get_token(session, api_url, 'csrf')
     csrf_token = csrf_token_response['query']['tokens']['csrftoken']
-    print(csrf_token)
     return api_url, csrf_token, session
 
-def copy_properties(session, source_api_url, target_api_url, target_csrf_token, id_list, language_list):
+def copy_properties(session, source_api_url, target_api_url, target_csrf_token, id_list, language_list, equiv_property=None):
     properties_in = get_entities(source_api_url, id_list, language_list)
     properties_in = properties_in['entities']
     keys_to_extract = ['datatype', 'labels', 'descriptions', 'aliases']
@@ -78,6 +76,20 @@ def copy_properties(session, source_api_url, target_api_url, target_csrf_token, 
     property_mapping=[]
     for pid in id_list:
         data = {key: properties_in[pid][key] for key in keys_to_extract}
+        if equiv_property:
+            # Create claim linking this to equivalent property ID in Wikidata
+            data['claims'] = [{
+                'mainsnak': {
+                    'snaktype': 'value',
+                    'property': equiv_property,
+                    'datavalue': {
+                        'value': pid,
+                        'type': 'string'
+                    }
+                },
+                'type': 'statement',
+                'rank': 'normal'
+            }]
         params['data'] = json.dumps(data)
         response = session.post(target_api_url, data=params)
         json_response = handle_response(response)
@@ -97,6 +109,8 @@ def main():
                         help='Text file with list of language codes in which to copy terms, one code per line')
     parser.add_argument('output_directory', 
                         help='Directory in which to save ID mapping file')
+    parser.add_argument('--equiv_property', type=str, required=False,
+        help='PID (in target Wikibase) of property representing \'corresponding Wikidata property\'')
     
     args = parser.parse_args()
     with open(args.id_list_file) as file:
@@ -111,7 +125,7 @@ def main():
     wikibase_api_url, csrf_token, s = retrieve_credentials_and_get_token(s, config)
     
     property_map = copy_properties(s, WIKIDATA_API_URL, wikibase_api_url, 
-                               csrf_token, id_list, language_list)
+                               csrf_token, id_list, language_list, args.equiv_property)
     
     output_file = os.path.join(args.output_directory, 'property_id_mapping.json')
     with open(output_file, 'w') as fout:
