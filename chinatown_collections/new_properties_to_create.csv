@@ -1,0 +1,12 @@
+﻿label,description,aliases,datatype
+description,free-text description of item in paragraph form,,monolingualtext
+general records type,term describing the general form of materials in the collection,type of materials (general)|general form of materials,wikibase-item
+specific records type,term describing the specific type/form of material included in the collection,type of materials (specific)|specific type of materials,wikibase-item
+digitization status,indication of whether the materials in the collection exist in digital form,,wikibase-item
+"access policy notes
+",any additional information not covered by the access restriction and digitization status that would help a user figure out how to gain access to the materials in the collection,,monolingualtext
+project status,"description of the current project status: has the project been completed, is it on hiatus, are materials still actively being added/processed/digitized?",,monolingualtext
+project start year,year the collection started accruing materials,,time
+project end year,year the collection stopped accruing materials (don't include if there are still expected accruals),,time
+contact,person or organization to contact with any questions about the collection,,wikibase-item
+collection description date,"date as of which this information was gathered and verified, as some aspects (e.g., project status, digitization status) are expected to change over time",,time

@@ -1,0 +1,23 @@
+﻿label,description,aliases,instance of,subclass of,described at URL,Getty AAT ID
+general records type,general intellectual form of archival materials,,,,https://www.archives.gov/research/catalog/lcdrg/authority_lists/grtlist.html,
+architectural and engineering drawings,term in General Records Type Authority List,,general records type,,,
+artifacts,term in General Records Type Authority List,,general records type,,,
+data files,term in General Records Type Authority List,,general records type,,,
+maps and charts,term in General Records Type Authority List,,general records type,,,
+moving images,term in General Records Type Authority List,,general records type,,,
+moving images,term in General Records Type Authority List,,general records type,,,
+photographs and other graphic materials,term in General Records Type Authority List,,general records type,,,
+sound recordings,term in General Records Type Authority List,,general records type,,,
+textual records,term in General Records Type Authority List,,general records type,,,
+web pages,term in General Records Type Authority List,,general records type,,,
+specific records type,intellectual format of the archival materials,,,,https://www.archives.gov/research/catalog/lcdrg/elements/srtlist.html,
+agendas,term in Specific Records Type Authority List,meeting minutes and agendas,specific records type,,,300027426
+booklets,term in Specific Records Type Authority List,,specific records type,,,300311670
+programs,term in Specific Records Type Authority List,,specific records type,,,300027240
+newspaper clippings,term in Specific Records Type Authority List,,specific records type,,,300429554
+interviews,term in Specific Records Type Authority List,interview transcripts,specific records type,,,300026392
+digitization status,indication of whether or not the materials in the collection exist in digital form,,,,,
+born-digital,all of the items in this collection originated as digital objects,,digitization status,,,
+fully digitized,all of the items in this collection have been digitized,,digitization status,,,
+partially digitized,some of the items in this collection have been digitized,,digitization status,,,
+not digitized,none of the items in this collection have been digitized,,digitization status,,,
