@@ -96,3 +96,20 @@ def copy_entities(session, source_api_url, target_api_url, target_csrf_token, id
         entity_mapping.append({'source_id': entity_id, 'target_id': target_id})
     return entity_mapping
 
+def create_new_property(session, api_url, csrf_token, data):
+    params = {
+        "action": "wbeditentity",
+         "new": "property",
+         "bot": True,
+         "token": csrf_token,
+         "format": "json",
+         "summary": "Bot edit!",
+         "data": data
+    }
+    response = session.post(api_url, data=params)
+    json_response = handle_response(response)
+    new_id = json_response['entity']['id']
+    print("Created new property with ID {}".format(new_id))
+    return json_response
+
+

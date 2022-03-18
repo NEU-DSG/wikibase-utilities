@@ -20,3 +20,10 @@ PASSWORD=wikibase-bot-password
 
 Run `python3 copy_entities.py -h` for more information on the arguments to provide. Example input files are included in the [example/](example/) directory.
 
+## Create properties from CSV
+
+[create_properties_from_csv.py](create_properties_from_csv.py) provides functionality for creating new properties based on monolingual labels and descriptions in a user-provided CSV file.
+
+Run `python3 create_properties_from_csv.py -h` for more information on the arguments to provide. 
+
+
