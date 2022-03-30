@@ -10,3 +10,5 @@ project start year,year the collection started accruing materials,,time
 project end year,year the collection stopped accruing materials (don't include if there are still expected accruals),,time
 contact,person or organization to contact with any questions about the collection,,wikibase-item
 collection description date,"date as of which this information was gathered and verified, as some aspects (e.g., project status, digitization status) are expected to change over time",,time
+collection type,term identifying the type of the collection,,wikibase-item
+organization type,term identifying the type of the organization,,wikibase-item
