@@ -96,20 +96,31 @@ def copy_entities(session, source_api_url, target_api_url, target_csrf_token, id
         entity_mapping.append({'source_id': entity_id, 'target_id': target_id})
     return entity_mapping
 
-def create_new_property(session, api_url, csrf_token, data):
+def create_new_entity(session, api_url, csrf_token, data, entity_type='property'):
     params = {
         "action": "wbeditentity",
-         "new": "property",
+         "new": entity_type,
          "bot": True,
          "token": csrf_token,
          "format": "json",
          "summary": "Bot edit!",
          "data": data
     }
-    response = session.post(api_url, data=params)
-    json_response = handle_response(response)
-    new_id = json_response['entity']['id']
-    print("Created new property with ID {}".format(new_id))
-    return json_response
+    try:
+        response = session.post(api_url, data=params)
+        json_response = handle_response(response)
+    except APIError as err:
+        print("Wikibase API error: {0}".format(err))
+        return err
+    else:
+        new_id = json_response['entity']['id']
+        print("Created new {entity} with ID {id}".format(entity=entity_type, id=new_id))
+        return json_response
+
+def create_new_property(session, api_url, csrf_token, data):
+    return create_new_entity(session, api_url, csrf_token, data, 'property')
+
+def create_new_item(session, api_url, csrf_token, data):
+    return create_new_entity(session, api_url, csrf_token, data, 'item')
 
 
