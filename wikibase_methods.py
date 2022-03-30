@@ -120,4 +120,7 @@ def create_new_entity(session, api_url, csrf_token, data, entity_type='property'
 def create_new_property(session, api_url, csrf_token, data):
     return create_new_entity(session, api_url, csrf_token, data, 'property')
 
+def create_new_item(session, api_url, csrf_token, data):
+    return create_new_entity(session, api_url, csrf_token, data, 'item')
+
 
