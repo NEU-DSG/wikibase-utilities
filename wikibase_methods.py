@@ -1,33 +1,37 @@
+"""Generic methods for interacting with Wikibase APIs (including the Wikidata API)"""
 import json
 import requests
 
 class APIError(Exception):
-    pass
+    """Object for API errors"""
 
 def handle_response(response):
+    """Deals with potential errors in the response from calls to the Wikibase API"""
     response.raise_for_status()
     json_response = response.json()
     if 'error' in json_response:
         raise APIError(json.dumps(json_response['error']))
     return json_response
 
-def get_entities(wikibase_api_url, id_list, language_list=[]):
+def get_entities(wikibase_api_url, id_list, language_list=None):
+    """Retrieves a list of entities from the Wikibase API"""
     params = {
         'action': 'wbgetentities',
         'format': 'json',
         'ids': '|'.join(id_list)
     }
-    if len(language_list) > 0:
+    if language_list:
         params['languages'] = '|'.join(language_list)
     response = requests.get(wikibase_api_url, params=params)
     json_response = handle_response(response)
     return json_response
 
 def get_token(session, wikibase_api_url, token_type):
+    """Requests a token from the Wikibase API"""
     params = {
-        'action': 'query', 
-        'meta': 'tokens', 
-        'type': token_type, 
+        'action': 'query',
+        'meta': 'tokens',
+        'type': token_type,
         'format': 'json'
     }
     response = session.get(wikibase_api_url, params=params)
@@ -35,6 +39,7 @@ def get_token(session, wikibase_api_url, token_type):
     return json_response, session
 
 def login(session, wikibase_api_url, token, username, password):
+    """Logs in to a Wikibase"""
     params = {
         'action': 'login',
         'lgname': username,
@@ -45,18 +50,27 @@ def login(session, wikibase_api_url, token, username, password):
     return response, session
 
 def retrieve_credentials_and_get_token(session, config):
+    """
+    Retrieves Wikibase API credentials from a dictionary and uses those to log in to the Wikibase
+    and request an edit token
+    """
     api_url = config['CREDENTIALS']['ENDPOINT_URL']
     login_token_response, session = get_token(session, api_url, 'login')
     login_token = login_token_response['query']['tokens']['logintoken']
-    data, session = login(session, 
-                          api_url, 
-                          login_token, config['CREDENTIALS']['USERNAME'], 
+    data, session = login(session,
+                          api_url,
+                          login_token, config['CREDENTIALS']['USERNAME'],
                           config['CREDENTIALS']['PASSWORD'])
     csrf_token_response, session = get_token(session, api_url, 'csrf')
     csrf_token = csrf_token_response['query']['tokens']['csrftoken']
     return api_url, csrf_token, session
 
-def copy_entities(session, source_api_url, target_api_url, target_csrf_token, id_list, language_list, entity_type='property', equiv_property=None):
+def copy_entities(session, source_api_url, target_api_url, target_csrf_token, id_list,
+language_list, entity_type='property', equiv_property=None):
+    """
+    Copies labels, descriptions, and aliases for entities from the source Wikibase
+    to the target Wikibase
+    """
     entities_in = get_entities(source_api_url, id_list, language_list)
     entities_in = entities_in['entities']
     keys_to_extract = ['labels', 'descriptions', 'aliases']
@@ -92,11 +106,12 @@ def copy_entities(session, source_api_url, target_api_url, target_csrf_token, id
         response = session.post(target_api_url, data=params)
         json_response = handle_response(response)
         target_id = json_response['entity']['id']
-        print("Created new entity with ID {}".format(target_id))
+        print(f"Created new entity with ID {target_id}")
         entity_mapping.append({'source_id': entity_id, 'target_id': target_id})
     return entity_mapping
 
 def create_new_entity(session, api_url, csrf_token, data, entity_type='property'):
+    """Creates a new Wikibase entity (default entity type is property)"""
     params = {
         "action": "wbeditentity",
          "new": entity_type,
@@ -110,17 +125,17 @@ def create_new_entity(session, api_url, csrf_token, data, entity_type='property'
         response = session.post(api_url, data=params)
         json_response = handle_response(response)
     except APIError as err:
-        print("Wikibase API error: {0}".format(err))
+        print(f"Wikibase API error: {err}")
         return err
     else:
         new_id = json_response['entity']['id']
-        print("Created new {entity} with ID {id}".format(entity=entity_type, id=new_id))
+        print(f"Created new {entity_type} with ID {new_id}")
         return json_response
 
 def create_new_property(session, api_url, csrf_token, data):
+    """Creates a new Wikibase property"""
     return create_new_entity(session, api_url, csrf_token, data, 'property')
 
 def create_new_item(session, api_url, csrf_token, data):
+    """Creates a new Wikibase item"""
     return create_new_entity(session, api_url, csrf_token, data, 'item')
-
-
